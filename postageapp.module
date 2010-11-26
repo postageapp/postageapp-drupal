@@ -1,0 +1,46 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_menu
+ */
+function postageapp_menu() {
+  $items = array();
+  
+  $items['admin/settings/postageapp'] = array(
+    'title' => 'PostageApp settings',
+    'description' => t('Settings for PostageApp integration'),
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('postageapp_admin_form'),
+    'access arguments' => array('administer postageapp'),
+    'file' => 'postageapp.admin.inc',
+  );
+  
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm
+ */
+function postageapp_perm() {
+  return array('administer postageapp');
+}
+
+
+/**
+ * Display help and module information
+ * @param path which path of the site we're displaying help
+ * @param arg array that holds the current path as would be returned from arg() function
+ * @return help text for the path
+ */
+function postageapp_help($path, $arg) {
+  $output = '';  //declare your output variable
+  switch ($path) {
+    case "admin/help#postageapp":
+      $output = '<p>'.  t("Allows you to send mail using the PostageApp API.") .'</p>';
+      break;
+  }
+  return $output;
+} // function onthisdate_help
+?>
