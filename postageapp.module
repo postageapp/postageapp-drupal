@@ -1,5 +1,37 @@
 <?php
-// $Id$
+// 
+
+/**
+ * @file
+ * Enables Drupal to send e-mail using the PostageApp API.
+ *
+ * Overriding mail handling in Drupal requires setting the smtp_library
+ * variable with the filename of a file containing a drupal_mail_wrapper()
+ * function. This module sets the smtp_library value to point back to this
+ * file which contains the drupal_mail_wrapper() function that uses the
+ * PHPMailer class to send e-mail instead of the PHP mail() function.
+ *
+ * @author Stephen McLeod
+ * @link http://postageapp.com
+ * @version $Id$
+ */
+
+
+
+require_once('PostageApp.class.php');
+
+/**
+* Implementation of hook_help().
+*/
+function postageapp_help($path, $arg) {
+ $output = '';
+ switch ($path) {
+   case "admin/help#postageapp":
+     $output = '<p>'.  t("Allows you to send mail using the PostageApp API.  See http://postageapp.com for more info.") .'</p>';
+     break;
+ }
+ return $output;
+} // End of postageapp_help()
 
 /**
  * Implementation of hook_menu
@@ -18,29 +50,40 @@ function postageapp_menu() {
   );
   
   return $items;
-}
+} // End of postageapp_menu()
 
 /**
  * Implementation of hook_perm
  */
 function postageapp_perm() {
   return array('administer postageapp');
-}
-
+} // End of postageapp_perm()
 
 /**
- * Display help and module information
- * @param path which path of the site we're displaying help
- * @param arg array that holds the current path as would be returned from arg() function
- * @return help text for the path
- */
-function postageapp_help($path, $arg) {
-  $output = '';  //declare your output variable
-  switch ($path) {
-    case "admin/help#postageapp":
-      $output = '<p>'.  t("Allows you to send mail using the PostageApp API.") .'</p>';
-      break;
+* Override the mail function
+* so we can send mail using the postageapp API
+*/
+function drupal_mail_wrapper($message) {
+  if ($message['from']) {
+    $headers = array_merge($message['headers'], array('From' => $message['from']));
+    $headers = array_merge($message['headers'], array('Reply-to' => $message['from']));
+  } else {
+    $headers = $message['headers'];
   }
-  return $output;
-} // function onthisdate_help
+
+  $q = new PostageApp(variable_get('postageapp_api_key', '')); 
+  $return = $q->mail(
+    $message['to'], 
+    $message['subject'], 
+    $message['body'],
+    $headers
+  );
+  
+  if (!($return->response->status == 'ok')) {
+    watchdog('mail', 'Error sending e-mail (from %from to %to).', array('%from' => $message['from'], '%to' => $message['to']), WATCHDOG_ERROR);
+    drupal_set_message(t($return->data->message), 'error');
+  }
+  
+  return $return;
+}
 ?>

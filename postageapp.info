@@ -1,5 +1,6 @@
 ; $Id$
 name = PostageApp
 description = This module allows you to send mail using the PostageApp API.
+package = Mail
 core = 6.x
 project = "postageapp"

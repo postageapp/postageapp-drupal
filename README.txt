@@ -1,7 +1,7 @@
-PHP Example Application for PostageApp
+Drupal Module for PostageApp
 ======================================
 
-A quick example on how to integrate [PostageApp](http://postageapp.com) email delivery with PHP application
+This module provides integration of [PostageApp](http://postageapp.com) email delivery for drupal as an easy to use module.
 
 
 Configuration
@@ -9,7 +9,7 @@ Configuration
 
 1. Sign up with [PostageApp](http://postageapp.com)
 2. Create a Project (optionally attach it to a mail server)
-3. Copy API KEY into postageapp_conf.inc
+3. Add your API key to postageapp admin page.
 
 Questions / Comments?
 ---------------------

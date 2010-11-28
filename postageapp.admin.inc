@@ -5,10 +5,47 @@
  * Admin settings form for the PostageApp API.
  */
 function postageapp_admin_form() {
-  $form = array();
+  $form = array();  
   
-  module_load_include('inc', 'postageapp', 'postageapp_class');
-
+  //override smtp_library variable so we don't have to use built in mail
+  //code taken from SMTP module, Thanks!
+  if (module_exists('mimemail') &&
+      strpos(variable_get('smtp_library', ''), 'mimemail')) {
+    // don't touch smtp_library (mimemail integration function below)
+  }
+  else {
+    if (variable_get('postageapp_on', 0)) {
+      $postageapp_path = drupal_get_filename('module', 'postageapp');
+      if ($postageapp_path) {
+        variable_set('smtp_library', $postageapp_path);
+      }
+      // If drupal can't find the path to the module, display an error.
+      else {
+        drupal_set_message(t("PostageApp.module error: Can't find file."), 'error');
+      }
+    }
+    // If this module is turned off, delete the variable.
+    else {
+      variable_del('smtp_library');
+    }
+  }
+  
+  $form['onoff'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Install options'),
+  );
+  $form['onoff']['postageapp_on'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Turn this module on or off'),
+    '#default_value' => variable_get('postageapp_on', 0),
+    '#options'       => array(1 => t('On'), 0 => t('Off')),
+    '#description'   => t('To uninstall this module you must turn it off here first.'),
+  );
+  
+  $form['postageapp_account_info'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Account Info'),
+  );
   $form['postageapp_account_info']['postageapp_api_key'] = array(
       '#type' => 'textfield',
       '#title' => t('PostageApp API Key'),
@@ -32,9 +69,39 @@ function postageapp_admin_form() {
   
   }
   
+  // If an address was given, send a test e-mail message.
+  $test_address = variable_get('postageapp_test_address', '');
+  if ($test_address != '') {
+    // Clear the variable so only one message is sent.
+    variable_del('postageapp_test_address');
+    global $language;
+    $params['subject'] = t('Drupal test e-mail');
+    $params['body']    = t('If you receive this message it means your site is capable of sending e-mail.');
+    $q = drupal_mail('postageapp', 'postageapp-test', $test_address, $language, $params);    
+    if ($q['result']->response->status == 'ok') {
+      drupal_set_message(t('A test e-mail has been sent to @email.', array('@email' => $test_address)));
+    } else {
+      drupal_set_message(t('The message could not be sent. You may want to !check for any error messages.', array('!check' => l(t('check the logs'), 'admin/reports/dblog'))));
+    }
+  }
+  $form['email_test'] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Send test e-mail'),
+  );
+  $form['email_test']['postageapp_test_address'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('E-mail address to send a test e-mail to'),
+    '#default_value' => '',
+    '#description'   => t('Type in an address to have a test e-mail sent there.'),
+  );
+
+  $form['postageapp_debugging'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Enable debugging'),
+    '#default_value' => variable_get('postageapp_debugging', 0),
+    '#description'   => t('Checking this box will print SMTP messages from the server for every e-mail that is sent.'),
+  );
+  
   return system_settings_form($form);
 }
-
-//'FHoI1LUaIcvb1wEy6NYmyjlSwnOXLyO9'
-
 ?>
