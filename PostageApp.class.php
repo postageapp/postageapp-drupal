@@ -67,7 +67,7 @@ class PostageApp
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
       'Content-Type: application/json',
-      'User-Agent: PostageApp PHP ' . phpversion()
+      'User-Agent: PostageApp Drupal (Drupal: '.(VERSION ? VERSION : '< 4.7.2').', PHP: '.phpversion().')';
     ));   
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
