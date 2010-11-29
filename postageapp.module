@@ -64,26 +64,28 @@ function postageapp_perm() {
 * so we can send mail using the postageapp API
 */
 function drupal_mail_wrapper($message) {
-  if ($message['from']) {
-    $headers = array_merge($message['headers'], array('From' => $message['from']));
-    $headers = array_merge($message['headers'], array('Reply-to' => $message['from']));
-  } else {
-    $headers = $message['headers'];
-  }
-
   $q = new PostageApp(variable_get('postageapp_api_key', '')); 
   $return = $q->mail(
     $message['to'], 
     $message['subject'], 
     $message['body'],
-    $headers
+    $message['headers']
   );
   
   if (!($return->response->status == 'ok')) {
-    watchdog('mail', 'Error sending e-mail (from %from to %to).', array('%from' => $message['from'], '%to' => $message['to']), WATCHDOG_ERROR);
-    drupal_set_message(t($return->data->message), 'error');
+    watchdog('mail', 'PostageApp: %message.', array('%message' => $return->response->message), WATCHDOG_ERROR);
+    return 0;
+  } else {
+    return $return;
   }
-  
-  return $return;
 }
+/**
+ * Implementation of hook_mailengine().
+ */
+function postageapp_mail($key, &$message, $params) {
+  if ($key == 'postageapp-test') {
+    $message['subject'] = $params['subject'];
+    $message['body']    = $params['body'];
+  }
+}  //  End of postageapp_mail().
 ?>

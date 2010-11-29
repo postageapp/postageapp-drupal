@@ -45,7 +45,8 @@ class PostageApp
     //   $content['content'] = $mail_body;
     // }
     
-    $content['template'] = $mail_body;
+    $content['content'] = $mail_body;
+    
     
     return PostageApp::post(
       'send_message', 

@@ -75,13 +75,13 @@ function postageapp_admin_form() {
     // Clear the variable so only one message is sent.
     variable_del('postageapp_test_address');
     global $language;
-    $params['subject'] = t('Drupal test e-mail');
-    $params['body']    = t('If you receive this message it means your site is capable of sending e-mail.');
+    $params['subject'] = 'Drupal test e-mail';
+    $params['body']    = 'If you receive this message it means your site is capable of sending e-mail.';
     $q = drupal_mail('postageapp', 'postageapp-test', $test_address, $language, $params);    
     if ($q['result']->response->status == 'ok') {
       drupal_set_message(t('A test e-mail has been sent to @email.', array('@email' => $test_address)));
     } else {
-      drupal_set_message(t('The message could not be sent. You may want to !check for any error messages.', array('!check' => l(t('check the logs'), 'admin/reports/dblog'))));
+      drupal_set_message(t('You may want to !check for any error messages.', array('!check' => l(t('check the logs'), 'admin/reports/dblog'))), 'error');
     }
   }
   $form['email_test'] = array(
