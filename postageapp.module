@@ -67,7 +67,7 @@ function drupal_mail_wrapper($message) {
   $q = new PostageApp(variable_get('postageapp_api_key', '')); 
   $return = $q->mail(
     $message['to'], 
-    $message['subject'], 
+    $message['subject'],
     $message['body'],
     $message['headers']
   );
