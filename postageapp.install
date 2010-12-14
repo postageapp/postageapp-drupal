@@ -1,0 +1,15 @@
+<?php
+// $Id$
+/**
+ * @file
+ *   Install file for postageapp module.
+ */
+
+ /**
+ * Implementation of hook_uninstall().
+ */
+function postageapp_uninstall() {
+  variable_del('smtp_library');
+}
+
+?>

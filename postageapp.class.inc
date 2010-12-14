@@ -6,8 +6,43 @@ class PostageApp
 {  
   // Sends a message to Postage App
   function PostageApp($apikey) {
-      $this->api_key = $apikey;
+    $this->api_key = $apikey;
   }
+  
+  function get_project_info() {
+    return PostageApp::post(
+      'get_project_info', 
+      json_encode(
+        array(
+          'api_key' => $this->api_key
+        )
+      )
+    );
+  }
+  
+  function get_account_info() {
+    return PostageApp::post(
+      'get_account_info', 
+      json_encode(
+        array(
+          'api_key' => $this->api_key
+        )
+      )
+    );
+  }
+  
+  function get_message_receipt($UID) {
+    return PostageApp::post(
+      'get_message_receipt', 
+      json_encode(
+        array(
+          'api_key' => $this->api_key,
+          'uid' => $UID
+        )
+      )
+    );
+  }
+  
   
   # Who's going to receive this email.
   # The $to field can have the following formats:

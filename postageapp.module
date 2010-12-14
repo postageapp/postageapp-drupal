@@ -17,20 +17,22 @@
  */
 
 
-
-require_once('PostageApp.class.php');
+require_once('postageapp.class.inc');
 
 /**
 * Implementation of hook_help().
 */
 function postageapp_help($path, $arg) {
- $output = '';
- switch ($path) {
-   case "admin/help#postageapp":
-     $output = '<p>'.  t("Allows you to send mail using the PostageApp API.  See http://postageapp.com for more info.") .'</p>';
-     break;
- }
- return $output;
+  $output = '';
+  switch ($path) {
+    case "admin/help#postageapp":
+      $output = '<p>'.  t("Allows you to send mail using the PostageApp API.  See http://postageapp.com for more info.") .'</p>';
+      break;
+    case "admin/settings/postageapp":
+      $output = '<p>'.  t("Enter text here to describe how to set up postageApp.  See http://postageapp.com for more info.") .'</p>';
+      break;
+  }
+  return $output;
 } // End of postageapp_help()
 
 /**
@@ -79,13 +81,4 @@ function drupal_mail_wrapper($message) {
     return $return;
   }
 }
-/**
- * Implementation of hook_mailengine().
- */
-function postageapp_mail($key, &$message, $params) {
-  if ($key == 'postageapp-test') {
-    $message['subject'] = $params['subject'];
-    $message['body']    = $params['body'];
-  }
-}  //  End of postageapp_mail().
 ?>
